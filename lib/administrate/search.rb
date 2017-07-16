@@ -33,11 +33,17 @@ module Administrate
       if query.blank?
         @scoped_resource.all
       else
-        @scoped_resource.where(query_template, *query_values)
+        results = @scoped_resource.where(query_template, *query_values)
+        results = filter_results(results)
+        results
       end
     end
 
     private
+
+    def filter_results(results)
+      results
+    end
 
     def query_template
       search_attributes.map do |attr|
