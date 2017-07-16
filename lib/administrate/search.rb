@@ -4,10 +4,13 @@ require "active_support/core_ext/object/blank"
 module Administrate
   class Search
     class Query
+      attr_reader :filters
+
       delegate :blank?, to: :terms
 
       def initialize(original_query)
         @original_query = original_query
+        @filters, @terms = parse_query(original_query)
       end
 
       def original
@@ -15,11 +18,30 @@ module Administrate
       end
 
       def terms
-        original.to_s
+        @terms.join(" ")
       end
 
       def to_s
         original
+      end
+
+      private
+
+      def filter?(word)
+        word.match?(/^\w+:$/)
+      end
+
+      def parse_query(query)
+        filters = []
+        terms = []
+        query.to_s.split.each do |word|
+          if filter?(word)
+            filters << word.split(":").first
+          else
+            terms << word
+          end
+        end
+        [filters, terms]
       end
     end
 
