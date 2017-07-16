@@ -28,4 +28,15 @@ describe Administrate::Search::Query do
     query = described_class.new("")
     expect(query).to be_blank
   end
+
+  it "parses filter syntax" do
+    query = described_class.new("vip: active:")
+    expect(query.filters).to eq(["vip", "active"])
+  end
+
+  it "splits filters and terms" do
+    query = described_class.new("vip: example.com")
+    expect(query.filters).to eq(["vip"])
+    expect(query.terms).to eq("example.com")
+  end
 end
