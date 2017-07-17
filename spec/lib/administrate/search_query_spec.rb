@@ -29,6 +29,11 @@ describe Administrate::Search::Query do
     expect(query).to be_blank
   end
 
+  it "is not blank with only a filter" do
+    query = described_class.new("foo:")
+    expect(query).to_not be_blank
+  end
+
   it "parses filter syntax" do
     query = described_class.new("vip: active:")
     expect(query.filters).to eq(["vip", "active"])
