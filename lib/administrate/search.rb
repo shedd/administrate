@@ -6,7 +6,9 @@ module Administrate
     class Query
       attr_reader :filters
 
-      delegate :blank?, to: :terms
+      def blank?
+        terms.blank? && filters.empty?
+      end
 
       def initialize(original_query)
         @original_query = original_query
@@ -63,7 +65,16 @@ module Administrate
 
     private
 
+    def apply_filter(filter, resources)
+      return resources unless filter
+      filter.call(resources)
+    end
+
     def filter_results(resources)
+      query.filters.each do |filter_name|
+        filter = valid_filters[filter_name]
+        resources = apply_filter(filter, resources)
+      end
       resources
     end
 
@@ -88,6 +99,14 @@ module Administrate
 
     def search_results(resources)
       resources.where(query_template, *query_values)
+    end
+
+    def valid_filters
+      if @dashboard_class.const_defined?(:COLLECTION_FILTERS)
+        @dashboard_class.const_get(:COLLECTION_FILTERS).stringify_keys
+      else
+        {}
+      end
     end
 
     def attribute_types
