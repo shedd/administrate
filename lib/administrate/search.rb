@@ -102,11 +102,7 @@ module Administrate
     end
 
     def valid_filters
-      if @dashboard_class.const_defined?(:COLLECTION_FILTERS)
-        @dashboard_class.const_get(:COLLECTION_FILTERS).stringify_keys
-      else
-        {}
-      end
+      Dashboard::CollectionFilters.new(@dashboard_class).filter_keys
     end
 
     def attribute_types
