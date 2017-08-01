@@ -1,0 +1,14 @@
+<section class="main-content__body">
+  <%= translated_scope "filters", page.resource_name %>:
+  <% collection_filters.each do |scope, key| %>
+    <label>
+      <%= link_to(
+            translated_scope(scope, page.resource_name),
+            {
+              search: build_filtered_search_query(search_term, scope)
+            }
+          )
+      %>
+    </label>
+  <% end %>
+</section>

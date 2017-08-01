@@ -26,3 +26,5 @@ en:
     search:
       clear: Clear search
       label: Search %{resource}
+    scopes:
+      filters: Filters
