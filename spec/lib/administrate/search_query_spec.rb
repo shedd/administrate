@@ -2,46 +2,50 @@ require "spec_helper"
 require "administrate/search"
 
 describe Administrate::Search::Query do
-  let(:query) { "foo bar" }
+  subject { described_class.new(query) }
 
-  it "returns the parsed search terms" do
-    query = described_class.new("foo bar")
-    expect(query.terms).to eq("foo bar")
+  context "when query is nil" do
+    let(:query) { nil }
+
+    it "treats nil as a blank string" do
+      expect(subject.terms).to eq("")
+    end
   end
 
-  it "treats nil as a blank string" do
-    query = described_class.new(nil)
-    expect(query.terms).to eq("")
+  context "when query is blank" do
+    let(:query) { "" }
+
+    it "returns true if blank" do
+      expect(subject).to be_blank
+    end
   end
 
-  it "returns the original query" do
-    query = described_class.new("original")
-    expect(query.original).to eq("original")
+  context "when given a query with only terms" do
+    let(:query) { "foo bar" }
+
+    it "returns the parsed search terms" do
+      expect(subject.terms).to eq("foo bar")
+    end
   end
 
-  it "uses the original query to represent itself as a string" do
-    query = described_class.new("original")
-    expect(query.to_s).to eq("original")
+  context "when query includes filters" do
+    let(:query) { "vip: active:" }
+
+    it "is not blank" do
+      expect(subject).to_not be_blank
+    end
+
+    it "parses filter syntax" do
+      expect(subject.filters).to eq(["vip", "active"])
+    end
   end
 
-  it "returns true if blank" do
-    query = described_class.new("")
-    expect(query).to be_blank
-  end
+  context "when query includes both filters and terms" do
+    let(:query) { "vip: example.com" }
 
-  it "is not blank with only a filter" do
-    query = described_class.new("foo:")
-    expect(query).to_not be_blank
-  end
-
-  it "parses filter syntax" do
-    query = described_class.new("vip: active:")
-    expect(query.filters).to eq(["vip", "active"])
-  end
-
-  it "splits filters and terms" do
-    query = described_class.new("vip: example.com")
-    expect(query.filters).to eq(["vip"])
-    expect(query.terms).to eq("example.com")
+    it "splits filters and terms" do
+      expect(subject.filters).to eq(["vip"])
+      expect(subject.terms).to eq("example.com")
+    end
   end
 end
