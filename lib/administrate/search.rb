@@ -30,7 +30,7 @@ module Administrate
       private
 
       def filter?(word)
-        word.match?(/^\w+:$/)
+        word =~ /^\w+:$/
       end
 
       def parse_query(query)
