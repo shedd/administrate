@@ -19,6 +19,14 @@ describe Administrate::Generators::RoutesGenerator, :generator do
       end
     end
 
+    it "populates default dashboards under the given namespace" do
+      routes = file("config/routes.rb")
+
+      run_generator ["--namespace", "manager"]
+
+      expect(routes).to contain("namespace :manager")
+    end
+
     it "does not populate routes when no models exist" do
       routes = file("config/routes.rb")
       allow(ActiveRecord::Base).to receive(:descendants).and_return([])
@@ -36,7 +44,7 @@ describe Administrate::Generators::RoutesGenerator, :generator do
       expect(routes).not_to contain("blog")
       expect(routes).not_to contain("post")
 
-      expect(output).to include <<~MSG
+      expect(output).to include <<-MSG.strip_heredoc
         WARNING: Unable to generate a dashboard for Blog::Post.
                  Administrate does not yet support namespaced models.
       MSG

@@ -30,7 +30,7 @@ module Administrate
       private
 
       def filter?(word)
-        word.match(/^\w+:$/)
+        word =~ /^\w+:$/
       end
 
       def parse_query(query)
@@ -83,7 +83,7 @@ module Administrate
         table_name = ActiveRecord::Base.connection.
           quote_table_name(@scoped_resource.table_name)
         attr_name = ActiveRecord::Base.connection.quote_column_name(attr)
-        "lower(#{table_name}.#{attr_name}) LIKE ?"
+        "LOWER(TEXT(#{table_name}.#{attr_name})) LIKE ?"
       end.join(" OR ")
     end
 
@@ -102,7 +102,11 @@ module Administrate
     end
 
     def valid_filters
-      Dashboard::CollectionFilters.new(@dashboard_class).filter_keys
+      if @dashboard_class.const_defined?(:COLLECTION_FILTERS)
+        @dashboard_class.const_get(:COLLECTION_FILTERS).stringify_keys
+      else
+        {}
+      end
     end
 
     def attribute_types

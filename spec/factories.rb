@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :customer do
     sequence(:name) { |n| "Customer #{n}" }
     email { name.downcase.gsub(" ", "_") + "@example.com" }
@@ -19,6 +19,11 @@ FactoryGirl.define do
     product
     unit_price 1.5
     quantity 1
+  end
+
+  factory :log_entry do
+    action "create"
+    association :logeable, factory: :customer
   end
 
   factory :order do
